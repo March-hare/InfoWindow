@@ -1,0 +1,122 @@
+#infowindow-content{
+	font-size: 12px;
+}
+#infowindow-content .infowindow_title{
+	margin: 5px 4px 10px;
+}
+
+#infowindow-content .infowindow_title a{
+	color:#173E6A;
+}
+#infowindow-content ul li,
+#infowindow-content .incident_items,
+#infowindow-content .incident_items > li{
+	list-style:none;
+}
+
+#infowindow-content ul{margin:0;}
+
+#infowindow-content .incident_items{
+	margin: 5px 0;
+	padding:0;
+}
+
+#infowindow-content .incident_items > li{
+	margin-bottom: 4px;
+}
+#infowindow-content .incident_items h6{
+	margin: 0 0 4px;
+	font-size:14px;
+	color:#666;
+}
+
+.incident_items .verified span{
+	font-size:10px;
+	text-transform: uppercase;
+	display:inline-block;
+	padding: 2px 3px;
+	color:#fff;
+	
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	-khtml-border-radius:3px;
+	border-radius:3px;
+	}
+.incident_items .r_verified { background:#368C00; }
+.incident_items .r_unverified { background:#A60003; }
+
+#infowindow-tabs{border:0;}
+
+#infowindow-tabs #tabs-nav{
+	-moz-border-radius-bottomright: 0;
+	-moz-border-radius-bottomleft: 0;
+	
+	-khtml-border-radius-bottomright: 0;
+	-khtml-border-radius-bottomleft: 0;
+	
+	-webkit-border-bottom-left-radius:0;
+	-webkit-border-bottom-right-radius:0;
+	
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	
+}
+#infowindow-tabs .ui-tabs-panel{
+	
+	border: solid #aaa;
+	border-width: 0 1px 1px;
+	background:#e7e7e7;
+	background: -webkit-gradient(linear,left top,left bottom, from(#ffffff), to(#e7e7e7));
+	background: -webkit-linear-gradient(left, #fff,#e7e7e7);
+	background: -moz-linear-gradient(left, #fff, #e7e7e7);
+	padding: 5px;
+}
+#infowindow-tabs .incident_items{
+	background:#fff;
+	padding: 5px 10px 10px;
+	border: solid #f9f9f9;
+	border-width: 0 1px 1px;
+	-webkit-border-radius: 0 0 4px 4px;
+
+}
+#pagination-wrap{
+	clear:both;
+	height: 20px;
+	margin: 5px 0;
+}
+
+.pagination {
+     font-size: 10px;
+        }
+        
+.pagination a {
+    text-decoration: none;
+	border: solid 1px #AAE;
+	color: #15B;
+}
+
+.pagination a, 
+.pagination span {
+    display: block;
+    float: left;
+    padding: 0.3em 0.5em;
+    margin-right: 5px;
+	margin-bottom: 5px;
+	min-width:1em;
+	text-align:center;
+}
+.pagination a:hover{
+	background:#f90;
+}
+
+.pagination .current {
+    background: #26B;
+    color: #fff;
+	border: solid 1px #AAE;
+}
+
+.pagination .current.prev, .pagination .current.next{
+	color:#999;
+	border-color:#999;
+	background:#fff;
+}
