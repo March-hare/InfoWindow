@@ -1,6 +1,7 @@
 #infowindow-content{
 	font-size: 12px;
 }
+.infowindow{width:400px;height:250px;}
 #infowindow-content .infowindow_title{
 	margin: 5px 4px 10px;
 }
@@ -29,6 +30,8 @@
 	font-size:14px;
 	color:#666;
 }
+
+.small-map .ui-tabs-panel{height:100px; overflow:auto;}
 
 .incident_items .verified span{
 	font-size:10px;

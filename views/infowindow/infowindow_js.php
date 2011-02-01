@@ -28,7 +28,7 @@ var incident_content = (function(){
 		
 				content = 	"<div id=\"infowindow-tabs\">"+
 							"<h5 class=\"infowindow_title\">"+
-								"<a href=\"/reports/view/"+incident.incidentid+"\">"+incident.incidenttitle+"</a>"+
+								"<a href=\"<?php echo url::base(); ?>reports/view/"+incident.incidentid+"\">"+incident.incidenttitle+"</a>"+
 							"</h5>"+
 							"<ul id=\"tabs-nav\"><li><a href=\"#tab1\">Description</a></li>";
 			if(showMedia){
@@ -162,7 +162,8 @@ function initPagination(){
 	$("#pagination-wrap").pagination(num_items,{
 		items_per_page : 1, //Show only one item at a time.
 		callback : pageCallback, // Callback for every page click,
-		num_edge_entries : 1
+		num_edge_entries : 1,
+		num_display_entries:7
 	});
 	
 
@@ -219,12 +220,12 @@ function onFeatureSelect(event){
                 content = "Content contained Javascript! Escaped content below.<br />" + content.replace(/</g, "&lt;");
             }
             
-            popup = new OpenLayers.Popup.FramedCloud("chicken", 
+            popup = new OpenLayers.Popup.FramedCloud("infowindow-bubble", 
 				event.feature.geometry.getBounds().getCenterLonLat(),
 				new OpenLayers.Size(100,100),
 				content,
 				null, true, onPopupClose);
-            
+           
             event.feature.popup = popup;
             
             
@@ -238,6 +239,9 @@ function onFeatureSelect(event){
        		else
        			renderSingle();
        	    
+       	    if(map.getCurrentSize().h < 400){
+       	    	jQuery("#infowindow-content").addClass("small-map");
+       	    }
        	    popup.updateSize();
 }
 jQuery(function($){

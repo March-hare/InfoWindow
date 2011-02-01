@@ -10,9 +10,10 @@ class InfoWindow {
 	}
 
 	public function add(){
-		if( Router::$controller == "main" )
+		if( Router::$controller == "main" ) {
 			plugin::add_stylesheet("infowindow/views/css/infowindow");
 			Event::add("ushahidi_action.main_footer",array($this,"register_script"));
+		}
 	}
 	
 	public function register_script(){
