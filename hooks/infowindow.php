@@ -11,15 +11,17 @@ class InfoWindow {
 
 	public function add(){
 		if( Router::$controller == "main" ) {
-			plugin::add_stylesheet("infowindow/views/css/infowindow");
+			plugin::add_stylesheet("InfoWindow/views/css/infowindow");
 			Event::add("ushahidi_action.main_footer",array($this,"register_script"));
 		}
 	}
 	
+	
+	
 	public function register_script(){
-		plugin::add_javascript("infowindow/media/js/jquery.pagination");
+		plugin::add_javascript("InfoWindow/media/js/jquery.pagination");
 		echo plugin::render("javascript");
-		echo "<script src=\"".URL::base()."infowindow\"></script>";
+		echo "<script src=\"".url::base()."infowindow\"></script>";
 	}
 }
 
