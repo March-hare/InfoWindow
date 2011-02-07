@@ -6,7 +6,7 @@ var num_pages = 1,
 
 /* 
 	[Incident Content]
-	Sets the inner html of the infowindow-content div.
+	Sets the inner html of the iw-content div.
 	Various Options:
 		1 - tabbed : Tabbed Content Structure using jQuery UI .tabs()
 	
@@ -24,27 +24,42 @@ var incident_content = (function(){
 	
 				media = (incidentData.media),
 	
+				//TODO: introduce custom form fields
+				customForm = this._custom_form_content(incident.incidentid),
+				
+				showCustomForm = (customForm.length > 0) ? true : false,
+				
 				showMedia = (media.length > 0) ? true : false,
-		
-				content = 	"<div id=\"infowindow-tabs\">"+
-							"<h5 class=\"infowindow_title\">"+
-								"<a href=\"<?php echo url::base(); ?>reports/view/"+incident.incidentid+"\">"+incident.incidenttitle+"</a>"+
-							"</h5>"+
-							"<ul id=\"tabs-nav\"><li><a href=\"#tab1\">Description</a></li>";
-			if(showMedia){
+				
+				
+				
+				content = 	"<div class=\"iw_hd clearingfix\">"+
+									"<h6 class=\"iw_title\">"+
+										"<a href=\"<?php echo url::base(); ?>reports/view/"+
+											incident.incidentid+"\">"+incident.incidenttitle+
+										"</a>"+
+									"</h6>"+
+									incidentVerified+
+							"</div>"+
+							"<div id=\"iw-tabs\">"+
+							"<ul id=\"iw-tabs-nav\" class=\"iw_nob\"><li><a href=\"#tab1\">Description</a></li>";
+			
+			if(showMedia)
 				content += "<li><a href=\"#tab2\">Media</a></li>";
-			}
+			
+			
+			if(showCustomForm)
+				content += "<li><a href=\"#tab3\">Custom Form</a></li>";
+			
+			
+			
 				content += "</ul>"+
-							"<div id=\"tab1\">"+
-								"<ul class=\"incident_items\">"+
-						   			"<li>Date\\Time: <time>"+incident.incidentdate+"</time></li>"+
-						   			"<li class=\"desc\"><h6>Description:</h6>"+incident.incidentdescription+"</li>"+
-						   			"<li class=\"verified\"><strong>Verified:</strong> "+incidentVerified+"</li>"+
-						   			"<li class=\"loc\"><strong>Location:</strong> "+incident.locationname+"</li>"+
-						   			"<li class=\"lat\"><h6>Latitude:</h6>"+incident.locationlatitude+"</span></li>"+
-						   			"<li class=\"lon\"><h6>Longitude:</h6>"+incident.locationlongitude+"</span></li>"+
-						   		"</ul>"+
+							"<div id=\"tab1\" class=\"iw_tab\">"+
+								"<div class=\"iw_details report_detail\">"+
+									incident.incidentdescription+
+								"</div>"+
 					   		"</div>";
+					   		
 				if(showMedia){
 					var mediaType = media[0].type,
 						mediaContent = "";
@@ -57,22 +72,95 @@ var incident_content = (function(){
 						default:
 							mediaContent = "OTHER";
 					}
-					content += "<div id=\"tab2\">"+
-			   						"<ul class=\"incident_items\">"+
+					content += "<div id=\"tab2\" class=\"iw_tab\">"+
+			   						"<ul class=\"iw_nob iw_media\">"+
 			   							"<li class=\"media\">"+mediaContent+"</li>"+
 			   						"</ul>"+
 								"</div>";
 				}
-			content += "</div><!-- /div.infowindow_tabs -->";
-		
-	
-	
-				$("#infowindow-content").empty().html(content);
+				
+				if(showCustomForm){
+					content += "<div id=\"tab3\" class=\"iw_tab\">"+customForm+"</div>";
+				}
 			
-				$("#infowindow-tabs").tabs({selected:0, fx: { opacity: 'toggle' } });
+			content += "<div class=\"iw_ft clearingfix\">"+
+							"<ul class=\"iw_nob iw_meta report_detail\">"+
+								"<li class=\"iw_lat\">"+incident.locationlatitude+"</li>"+
+								"<li class=\"iw_lon\">"+incident.locationlongitude+"</li>"+
+								"<li class=\"iw_loc r_location\">"+incident.locationname+"</li>"+
+								"<li class=\"iw_date r_date\">"+incident.incidentdate+"</li>"+
+							"</ul>"+
+						"</div><!-- /div.iw_ft -->"+
+					"</div><!-- /div#iw-tabs -->";
+			
+			
+	
+	
+				$("#iw-content").empty().html(content);
+			
+				$("#iw-tabs").tabs({selected:0, fx: { opacity: 'toggle' } });
 		
 		
-		})
+		}),
+		_custom_form_content : (function(incidentid){
+			var form = "";
+			
+			jQuery.ajax({
+			
+				type : "GET",
+				url : "http://jphaiti.local/api?task=customforms&by=fields&id="+incidentid,
+				async : false,
+				dataType : "json",
+				success : function(data){
+					
+					if(data.error.code == 0){
+						var fields = data.payload.customforms.fields,
+							len = fields.length;
+							
+							form = "<ul class=\"iw_cf iw_nob\">";
+						
+						if(len > 0){ // Do we have custom form fields? 
+							for(var i = 0; i < len; i++){
+								var field = fields[i],
+									value = "",
+									valuesCol = field.values,
+									meta = field.meta,
+									valuesLen = valuesCol.length;
+								
+								if(valuesLen > 1){
+								
+									for(var j = 0; j < valuesLen; j++){
+										value += valuesCol[j]+", ";
+									}//end for
+								
+									value = value.slice(0,-2); //Remove last character
+								
+								}else{
+									value = valuesCol[0];
+								}
+								
+								form += "<li class=\"custom-form-item\"><strong>"+field.meta.field_name+":</strong> "+value+"</li>";
+								
+								
+							
+							}//end for
+							
+							
+							
+						}
+						form += "</ul>";
+						
+						
+						
+						
+						
+					}//end if(!data.error)
+				}
+			});
+		
+			return form;
+		
+		}) // end _custom_form_content
 	
 	};
 
@@ -157,7 +245,7 @@ function pageCallback(index,jq){
 function initPagination(){
 	var num_items = incidents.length;
 	
-	$("#infowindow-content").after("<div id=\"pagination-wrap\" />");
+	$("#iw-content").after("<div id=\"pagination-wrap\" />");
 	
 	$("#pagination-wrap").pagination(num_items,{
 		items_per_page : 1, //Show only one item at a time.
@@ -197,20 +285,27 @@ function onFeatureSelect(event){
 			lon = zoom_point.lon;
 			lat = zoom_point.lat;
 
-			var content = "<div class=\"infowindow\"><div class=\"infowindow_list\">"+event.feature.attributes.name+"<div style=\"clear:both;\"></div></div>";
-		    content += "\n<div class=\"infowindow_meta\"><a href='"+event.feature.attributes.link+"'><?php echo Kohana::lang('ui_main.more_information');?></a><br/><a href='javascript:zoomToSelectedFeature("+ lon + ","+ lat +", 1)'><?php echo Kohana::lang('ui_main.zoom_in');?></a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href='javascript:zoomToSelectedFeature("+ lon + ","+ lat +", -1)'><?php echo Kohana::lang('ui_main.zoom_out');?></a></div>";
-			content = content + "</div>";
-			
-			content = "<div class=\"infowindow\">"+
-						"<div id=\"infowindow-content\" class=\"clearingfix\"></div>"+
-					  	"<div class=\"infowindow_meta\">"+
-					  		"<a href='"+event.feature.attributes.link+"'>"+
-					  			"<?php echo Kohana::lang('ui_main.more_information');?>"+
-					  		"</a><br/>"+
-					  		"<a href='javascript:zoomToSelectedFeature("+ lon + ","+ lat +", 1)'>"+
-					  			"<?php echo Kohana::lang('ui_main.zoom_in');?>"+
-					  		"</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href='javascript:zoomToSelectedFeature("+ lon + ","+ lat +", -1)'><?php echo Kohana::lang('ui_main.zoom_out');?></a>"+
-					  	"</div>"+
+			var content = "<div class=\"iw\">"+
+						"<div id=\"iw-content\" class=\"clearingfix\"></div>"+
+						  	"<div class=\"iw_ft_meta clearingfix\">"+
+						  		"<ul class=\"iw_nob\">"+
+							  		"<li class=\"iw_more\">"+
+								  		"<a href='"+event.feature.attributes.link+"'>"+
+								  			"<?php echo Kohana::lang('ui_main.more_information');?>"+
+								  		"</a>"+
+							  		"</li>"+
+							  		"<li class=\"iw_zi\">"+
+								  		"<a href='javascript:zoomToSelectedFeature("+ lon + ","+ lat +", 1)'>"+
+								  			"<?php echo Kohana::lang('ui_main.zoom_in');?>"+
+								  		"</a>"+
+							  		"</li>"+
+							  		"<li class=\"iw_zo\">"+
+							  			"<a href='javascript:zoomToSelectedFeature("+ lon + ","+ lat +", -1)'>"+
+							  				"<?php echo Kohana::lang('ui_main.zoom_out');?>"+
+							  			"</a>"+
+							  		"</li>"+
+						  		"</ul>"+
+						  	"</div>"+
 					  "</div>";	
 			
 			get_content(event.feature);
@@ -220,7 +315,7 @@ function onFeatureSelect(event){
                 content = "Content contained Javascript! Escaped content below.<br />" + content.replace(/</g, "&lt;");
             }
             
-            popup = new OpenLayers.Popup.FramedCloud("infowindow-bubble", 
+            popup = new OpenLayers.Popup.FramedCloud("iw-bubble", 
 				event.feature.geometry.getBounds().getCenterLonLat(),
 				new OpenLayers.Size(100,100),
 				content,
@@ -240,7 +335,7 @@ function onFeatureSelect(event){
        			renderSingle();
        	    
        	    if(map.getCurrentSize().h < 400){
-       	    	jQuery("#infowindow-content").addClass("small-map");
+       	    	jQuery("#iw-content").addClass("small-map");
        	    }
        	    popup.updateSize();
 }
