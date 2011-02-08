@@ -17,21 +17,23 @@ var incident_content = (function(){
 	return {
 	
 		tabbed : (function(incidentData){
-		
+			
 			var incident = incidentData.incident,
 		
 				incidentVerified = (incident.incidentverified == 1) ? "<span class=\"r_verified\">verified</span>" : "<span class=\"r_unverified\">unverfied</span>",
+				
+				incidentLocationName = (incident.locationname != "") ? incident.locationname : "None",
+				
+				incidentDate = this.helper._get_date_time(incident.incidentdate),
 	
 				media = (incidentData.media),
 	
 				//TODO: introduce custom form fields
-				customForm = this._custom_form_content(incident.incidentid),
+				customForm = this.helper._custom_form_content(incident.incidentid),
 				
 				showCustomForm = (customForm.length > 0) ? true : false,
 				
 				showMedia = (media.length > 0) ? true : false,
-				
-				
 				
 				content = 	"<div class=\"iw_hd clearingfix\">"+
 									"<h6 class=\"iw_title\">"+
@@ -85,16 +87,18 @@ var incident_content = (function(){
 			
 			content += "<div class=\"iw_ft clearingfix\">"+
 							"<ul class=\"iw_nob iw_meta report_detail\">"+
-								"<li class=\"iw_lat\">"+incident.locationlatitude+"</li>"+
-								"<li class=\"iw_lon\">"+incident.locationlongitude+"</li>"+
-								"<li class=\"iw_loc r_location\">"+incident.locationname+"</li>"+
-								"<li class=\"iw_date r_date\">"+incident.incidentdate+"</li>"+
+								"<li class=\"iw_loc r_location\">"+incidentLocationName+"</li>"+
+								"<li class=\"iw_date r_date\">"+incidentDate+"</li>"+
 							"</ul>"+
 						"</div><!-- /div.iw_ft -->"+
 					"</div><!-- /div#iw-tabs -->";
 			
 			
-	
+			/* 
+				[Now we set the lat and lon]
+			---------------------------------------------------------------------------*/
+			$("#iw-lat").text(incident.locationlatitude);
+			$("#iw-lon").text(incident.locationlongitude);
 	
 				$("#iw-content").empty().html(content);
 			
@@ -102,67 +106,87 @@ var incident_content = (function(){
 		
 		
 		}),
-		_custom_form_content : (function(incidentid){
-			var form = "";
-			
-			jQuery.ajax({
-			
-				type : "GET",
-				url : "http://jphaiti.local/api?task=customforms&by=fields&id="+incidentid,
-				async : false,
-				dataType : "json",
-				success : function(data){
+		
+		helper : {
+				_get_date_time : (function(iDate){
+					var dateArr = iDate.split(" "),
+					 	theDate = new Date(dateArr[0]),
+					 	theTime = dateArr[1].slice(0,-3);
+					 						
 					
-					if(data.error.code == 0){
-						var fields = data.payload.customforms.fields,
-							len = fields.length;
+					
+					
+					
+					return theTime + " " + theDate.toDateString();
+					
+				
+				}),
+				_custom_form_content : (function(incidentid){
+					var form = "";
+					
+					jQuery.ajax({
+					
+						type : "GET",
+						url : "http://jphaiti.local/api?task=customforms&by=fields&id="+incidentid,
+						async : false,
+						dataType : "json",
+						success : function(data){
 							
-							form = "<ul class=\"iw_cf iw_nob\">";
-						
-						if(len > 0){ // Do we have custom form fields? 
-							for(var i = 0; i < len; i++){
-								var field = fields[i],
-									value = "",
-									valuesCol = field.values,
-									meta = field.meta,
-									valuesLen = valuesCol.length;
+							if(data.error.code == 0){
+								var fields = data.payload.customforms.fields,
+									len = fields.length;
+									
+									form = "<ul class=\"iw_cf iw_nob\">";
 								
-								if(valuesLen > 1){
-								
-									for(var j = 0; j < valuesLen; j++){
-										value += valuesCol[j]+", ";
+								if(len > 0){ // Do we have custom form fields? 
+									for(var i = 0; i < len; i++){
+										var field = fields[i],
+											value = "",
+											valuesCol = field.values,
+											meta = field.meta,
+											valuesLen = valuesCol.length;
+										
+										if(valuesLen > 1){
+										
+											for(var j = 0; j < valuesLen; j++){
+												value += valuesCol[j]+", ";
+											}//end for
+										
+											value = value.slice(0,-2); //Remove last character
+										
+										}else{
+											value = valuesCol[0];
+										}
+										
+										form += "<li class=\"custom-form-item\"><strong>"+field.meta.field_name+":</strong> "+value+"</li>";
+										
+										
+									
 									}//end for
-								
-									value = value.slice(0,-2); //Remove last character
-								
-								}else{
-									value = valuesCol[0];
+									
+									
+									
 								}
+								form += "</ul>";
 								
-								form += "<li class=\"custom-form-item\"><strong>"+field.meta.field_name+":</strong> "+value+"</li>";
 								
 								
-							
-							}//end for
-							
-							
-							
+								
+								
+							}//end if(!data.error)
 						}
-						form += "</ul>";
-						
-						
-						
-						
-						
-					}//end if(!data.error)
-				}
-			});
+					});
+				
+					return form;
+				
+				}) // end _custom_form_content
+			
+			
+			
+			}// end helper
 		
-			return form;
-		
-		}) // end _custom_form_content
 	
-	};
+	}; //end return (for incident_content)
 
 
 
@@ -288,22 +312,30 @@ function onFeatureSelect(event){
 			var content = "<div class=\"iw\">"+
 						"<div id=\"iw-content\" class=\"clearingfix\"></div>"+
 						  	"<div class=\"iw_ft_meta clearingfix\">"+
-						  		"<ul class=\"iw_nob\">"+
+						  		"<ul id=\"iw_coord\" class=\"iw_nob iw_al\">"+
+						  			"<li id=\"iw-lon\">00</li>"+
+						  			"<li id=\"iw-lat\">00</li>"+
+						  		"</ul>"+
+						  		"<ul class=\"iw_nob iw_ar\">"+
 							  		"<li class=\"iw_more\">"+
 								  		"<a href='"+event.feature.attributes.link+"'>"+
 								  			"<?php echo Kohana::lang('ui_main.more_information');?>"+
 								  		"</a>"+
 							  		"</li>"+
-							  		"<li class=\"iw_zi\">"+
-								  		"<a href='javascript:zoomToSelectedFeature("+ lon + ","+ lat +", 1)'>"+
-								  			"<?php echo Kohana::lang('ui_main.zoom_in');?>"+
-								  		"</a>"+
-							  		"</li>"+
-							  		"<li class=\"iw_zo\">"+
-							  			"<a href='javascript:zoomToSelectedFeature("+ lon + ","+ lat +", -1)'>"+
-							  				"<?php echo Kohana::lang('ui_main.zoom_out');?>"+
-							  			"</a>"+
-							  		"</li>"+
+							  		"<li>"+
+								  		"<ul class=\"iw_nob\">"+
+									  		"<li class=\"iw_zi\">"+
+										  		"<a title=\"Zoom In\" class=\"iconic plus-alt\" href='javascript:zoomToSelectedFeature("+ lon + ","+ lat +", 1)'>"+
+										  			"<?php echo Kohana::lang('ui_main.zoom_in');?>"+
+										  		"</a>"+
+									  		"</li>"+
+									  		"<li class=\"iw_zo\">"+
+									  			"<a title=\"Zoom Out\" class=\"iconic minus-alt\" href='javascript:zoomToSelectedFeature("+ lon + ","+ lat +", -1)'>"+
+									  				"<?php echo Kohana::lang('ui_main.zoom_out');?>"+
+									  			"</a>"+
+									  		"</li>"+
+								  		"</ul>"+
+							  		"</li>"
 						  		"</ul>"+
 						  	"</div>"+
 					  "</div>";	
@@ -342,8 +374,9 @@ function onFeatureSelect(event){
 jQuery(function($){
 
 	if($.fn.tabs === undefined){
-		$.getScript("<?php echo url::base(); ?>plugins/infowindow/media/js/jquery.ui.widget.min.js");
-		$.getScript("<?php echo url::base(); ?>plugins/infowindow/media/js/jquery.ui.tabs.min.js");
-	}
+		$.getScript("<?php echo url::base(); ?>plugins/InfoWindow/media/js/jquery.ui.widget.min.js");
+		$.getScript("<?php echo url::base(); ?>plugins/InfoWindow/media/js/jquery.ui.tabs.min.js");
+	}	
+	
 });
 	
