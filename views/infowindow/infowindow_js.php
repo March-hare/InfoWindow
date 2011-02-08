@@ -127,7 +127,7 @@ var incident_content = (function(){
 					jQuery.ajax({
 					
 						type : "GET",
-						url : "http://jphaiti.local/api?task=customforms&by=fields&id="+incidentid,
+						url : "<?php echo url::base(); ?>api?task=customforms&by=fields&id="+incidentid,
 						async : false,
 						dataType : "json",
 						success : function(data){
