@@ -140,26 +140,28 @@ var incident_content = (function(){
 								
 								if(len > 0){ // Do we have custom form fields? 
 									for(var i = 0; i < len; i++){
+										
 										var field = fields[i],
+											type = field.meta.type,
 											value = "",
 											valuesCol = field.values,
 											meta = field.meta,
 											valuesLen = valuesCol.length;
-										
-										if(valuesLen > 1){
-										
-											for(var j = 0; j < valuesLen; j++){
-												value += valuesCol[j]+", ";
-											}//end for
-										
-											value = value.slice(0,-2); //Remove last character
-										
-										}else{
-											value = valuesCol[0];
-										}
-										
-										form += "<li class=\"custom-form-item\"><strong>"+field.meta.field_name+":</strong> "+value+"</li>";
-										
+										if( (type != 8) && (type != 9) ){ //don't need to show div fields
+											if(valuesLen > 1){
+											
+												for(var j = 0; j < valuesLen; j++){
+													value += valuesCol[j]+", ";
+												}//end for
+											
+												value = value.slice(0,-2); //Remove last character
+											
+											}else{
+												value = valuesCol[0];
+											}
+											
+											form += "<li class=\"custom-form-item\"><strong>"+field.meta.name+":</strong> "+value+"</li>";					
+										}//end if	
 										
 									
 									}//end for
@@ -195,7 +197,7 @@ var incident_content = (function(){
 
 
 function set_incidents(url){
-
+	
 	jQuery.ajax({
       type: "GET",
       url: url,
@@ -238,9 +240,10 @@ function set_cluster_content(feature){
 function set_single_content(feature){
 	
 	var link = feature.attributes.link,
-		lArr = link.split("/"),
-		id = lArr[5],
+		lArr = link.split("view/"),
+		id = lArr[1],
 		url = "<?php echo URL::base();?>api?task=incidents&by=incidentid&id="+id;
+		
 		
 	set_incidents(url);
 		
@@ -249,6 +252,8 @@ function set_single_content(feature){
 }
 
 function renderSingle(index){
+	
+	
 	incident_content.tabbed(incidents[0]); //Only rendering one incident;
 }
 /* 
@@ -360,7 +365,6 @@ function onFeatureSelect(event){
             map.addPopup(popup);
                       	
            	
-       	
        		if(paginate)
        			initPagination();
        		else
