@@ -35,6 +35,8 @@ var incident_content = (function(){
 				
 				showMedia = (media.length > 0) ? true : false,
 				
+				$tabs,
+				
 				content = 	"<div class=\"iw_hd clearingfix\">"+
 									"<h6 class=\"iw_title\">"+
 										"<a href=\"<?php echo url::base(); ?>reports/view/"+
@@ -63,20 +65,9 @@ var incident_content = (function(){
 					   		"</div>";
 					   		
 				if(showMedia){
-					var mediaType = media[0].type,
-						mediaContent = "";
-					
-					
-					switch(mediaType){
-						case "1":
-							mediaContent = "<a target=\"_blank\" href=\""+media[1].thumb_url+"\"><img src=\""+ media[1].thumb_url + "\" alt=\""+incident.incidenttitle+"\" /></a>";
-							break;
-						default:
-							mediaContent = "OTHER";
-					}
 					content += "<div id=\"tab2\" class=\"iw_tab\">"+
 			   						"<ul class=\"iw_nob iw_media\">"+
-			   							"<li class=\"media\">"+mediaContent+"</li>"+
+			   							this.helper._media_content(incidentData)+
 			   						"</ul>"+
 								"</div>";
 				}
@@ -101,10 +92,22 @@ var incident_content = (function(){
 			$("#iw-lon").text(incident.locationlongitude);
 	
 				$("#iw-content").empty().html(content);
-			
-				$("#iw-tabs").tabs({selected:0, fx: { opacity: 'toggle' } });
-		
-		
+				
+				$tabs = $("#iw-tabs");
+				
+				$tabs.tabs({selected:0, fx: { opacity: 'toggle' } });
+				
+				$tabs.find(".iw_media_image").find("a").click(function(e){
+				
+					var $trigger = $(this),
+						title = $trigger.attr("title"),
+						url = $trigger.attr("href");
+				
+					$.colorbox({href : url, title : title});
+					
+					e.preventDefault();
+				});
+				
 		}),
 		
 		helper : {
@@ -181,9 +184,83 @@ var incident_content = (function(){
 				
 					return form;
 				
-				}) // end _custom_form_content
+				}), // end _custom_form_content
 			
-			
+				_media_content : (function(incidentData){
+					var media = incidentData.media,
+						
+						mediaLen = media.length,
+						
+						item, //Media Item
+						
+						i = 0, //Happy Looping
+						
+						content = "", //Final return value
+						
+						links = [], //Will be pushing in links here
+						
+						images = []; //Will be pushing in images here
+					
+					
+					//First let's organize or media types
+					for(i; i<mediaLen;i++){
+						
+						item = media[i];
+						
+												
+						switch(item.type){
+						
+							case "1" :
+								//Media Image
+								images.push({incidenttitle : incidentData.incident.incidenttitle, thumb: "<?php echo url::base()."media/uploads/"; ?>"+item.thumb, url : "<?php echo url::base()."media/uploads/"; ?>"+item.link});
+								
+							break;
+							
+							default : 
+								//Media Link
+								links.push({url : item.link});
+						}
+						
+					}//end for
+					
+					//Now let us figure out what content to build out.
+					if(images.length > 0){
+						
+						//Build the image html
+						
+						var len = images.length,
+							image;
+						
+						content += "<li><h2 class=\"iw_media_title\">Images</h2></li>";
+						
+						for(i=0;i<len;i++){
+							image = images[i];
+							content += "<li class=\"iw_media_image\"><a rel=\"iwgroup\" href=\""+image.url+"\" title=\""+image.incidenttitle+"\"><img src=\""+image.thumb+"\" alt=\""+image.incidenttitle+"\" /></a></li>";
+						}
+						
+					}
+						
+					if(links.length > 0){
+					
+						//Build the link html
+						
+						var len = links.length,
+							link;
+						
+						content += "<li><h2 class=\"iw_media_title\">Links</h2></li>";
+						
+						for(i=0;i<len;i++){
+							link = links[i];
+							content += "<li class=\"iw_media_link\"><a href=\""+link.url+"\">"+link.url+"</a></li>";
+						}
+						
+					}
+					
+					
+					return content; //Return the final html (either blank, images, links, or both images and links)
+					
+				
+				})// end _media_content
 			
 			}// end helper
 		
@@ -376,11 +453,16 @@ function onFeatureSelect(event){
        	    popup.updateSize();
 }
 jQuery(function($){
-
+	
 	if($.fn.tabs === undefined){
+		//Don't want to step on popular jquery plugins
 		$.getScript("<?php echo url::base(); ?>plugins/InfoWindow/media/js/jquery.ui.widget.min.js");
 		$.getScript("<?php echo url::base(); ?>plugins/InfoWindow/media/js/jquery.ui.tabs.min.js");
 	}	
+	if($.fn.colorbox === undefined){
+		//Don't want to step on popular jquery plugins
+		$.getScript("<?php echo url::base(); ?>plugins/InfoWindow/media/js/jquery.colorbox-min.js");
+	}
 	
 });
 	

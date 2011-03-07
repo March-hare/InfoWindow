@@ -16,8 +16,6 @@ class InfoWindow {
 		}
 	}
 	
-	
-	
 	public function register_script(){
 		plugin::add_javascript("InfoWindow/media/js/jquery.pagination");
 		echo plugin::render("javascript");
