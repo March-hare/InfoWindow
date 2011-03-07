@@ -235,7 +235,7 @@ var incident_content = (function(){
 						
 						for(i=0;i<len;i++){
 							image = images[i];
-							content += "<li class=\"iw_media_image\"><a rel=\"iwgroup\" href=\""+image.url+"\" title=\""+image.incidenttitle+"\"><img src=\""+image.thumb+"\" alt=\""+image.incidenttitle+"\" /></a></li>";
+							content += "<li class=\"iw_media_image\"><a target=\"_image\" rel=\"iwgroup\" href=\""+image.url+"\" title=\""+image.incidenttitle+"\"><img src=\""+image.thumb+"\" alt=\""+image.incidenttitle+"\" /></a></li>";
 						}
 						
 					}
@@ -251,7 +251,7 @@ var incident_content = (function(){
 						
 						for(i=0;i<len;i++){
 							link = links[i];
-							content += "<li class=\"iw_media_link\"><a href=\""+link.url+"\">"+link.url+"</a></li>";
+							content += "<li class=\"iw_media_link\"><a target=\"_web\" href=\""+link.url+"\">"+link.url+"</a></li>";
 						}
 						
 					}
