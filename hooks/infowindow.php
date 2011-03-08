@@ -10,7 +10,8 @@ class InfoWindow {
 	}
 
 	public function add(){
-		if( Router::$controller == "main" ) {
+		if( Router::$controller == "main" || /*Incase we are using the map embed plugin*/ Router::$controller == "mapembed") 
+		{
 			plugin::add_stylesheet("InfoWindow/views/css/infowindow");
 			Event::add("ushahidi_action.main_footer",array($this,"register_script"));
 		}
