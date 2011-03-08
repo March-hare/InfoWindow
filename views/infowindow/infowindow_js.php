@@ -318,7 +318,7 @@ var incident_content = (function(){
 										"<img src=\"<?php echo url::base()."media/uploads/"; ?>"+category.image_thumb+"\" alt=\""+category.title+"\" /></span>";
 						}else{				
 							content += "<span class=\"r_cat-box\" style=\"background-color:#"+category.color+"\"></span>";
-						}
+						}//endif
 							content += "<span class=\"r_cat-desc\">"+category.title+"</span>"+
 										"</a>"+
 									"</li>";
