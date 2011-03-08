@@ -521,7 +521,7 @@ function onFeatureSelect(event){
 						  		"<ul class=\"iw_nob iw_ar\">"+
 							  		"<li class=\"iw_more\">"+
 								  		"<a href='"+event.feature.attributes.link+"'>"+
-								  			"<?php echo Kohana::lang('ui_main.view_report');?>"+
+								  			"<?php echo Kohana::lang('ui_main.view_reports');?>"+
 								  		"</a>"+
 							  		"</li>"+
 						  		"</ul>"+
