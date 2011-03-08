@@ -309,13 +309,20 @@ var incident_content = (function(){
 						
 						category = this._category(categories[i].category.id);
 						
-						if(category)
+						if(category){
 						content += "<li class=\"iw_category\">"+
-										"<a title=\""+category.title+"\" class=\"r_category\" href=\"<?php echo url::base()."reports/?c=" ?>"+category.id+"\">"+
-											"<span class=\"r_cat-box\" style=\"background-color:#"+category.color+"\"></span>"+
-											"<span class=\"r_cat-desc\">"+category.title+"</span>"+
-										"</a></li>";
-										
+										"<a title=\""+category.title+"\" class=\"r_category\" href=\"<?php echo url::base()."reports/?c=" ?>"+category.id+"\">";
+						if(category.image_thumb!=undefined && category.image_thumb!= null){
+							//we have a category thumb
+							content += "<span class=\"r_cat-box\">"+
+										"<img src=\"<?php echo url::base()."media/uploads/"; ?>"+category.image_thumb+"\" alt=\""+category.title+"\" /></span>";
+						}else{				
+							content += "<span class=\"r_cat-box\" style=\"background-color:#"+category.color+"\"></span>";
+						}
+							content += "<span class=\"r_cat-desc\">"+category.title+"</span>"+
+										"</a>"+
+									"</li>";
+						}//endif					
 					}
 					
 					return content;
