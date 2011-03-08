@@ -6,7 +6,7 @@ var num_pages = 1,
 
 /* 
 	[Incident Content]
-	Sets the inner html of the iw-content div.
+	Sets the inner html of the iw-placeholder div.
 	Various Options:
 		1 - tabbed : Tabbed Content Structure using jQuery UI .tabs()
 	
@@ -46,15 +46,16 @@ var incident_content = (function(){
 									"</h6>"+
 									incidentVerified+
 							"</div>"+
+							"<ul id=\"iw-categories\" class=\"clearingfix\"><li><h6 class=\"iw_cat_title\"><?php echo Kohana::lang("ui_main.categories"); ?>:</h6></li>"+this.helper._incident_categories(incidentData)+"</ul>"+
 							"<div id=\"iw-tabs\">"+
-							"<ul id=\"iw-tabs-nav\" class=\"iw_nob\"><li><a href=\"#tab1\">Details</a></li>";
+							"<ul id=\"iw-tabs-nav\" class=\"iw_nob\"><li><a href=\"#tab1\"><?php echo kohana::lang("ui_main.details"); ?></a></li>";
 			
 			if(showImages)
-				content += "<li><a href=\"#tab2\">Images</a></li>";
+				content += "<li><a href=\"#tab2\"><?php echo kohana::lang("ui_main.images"); ?></a></li>";
 			
 			
 			if(showCustomForm)
-				content += "<li><a href=\"#tab3\">Custom Form</a></li>";
+				content += "<li><a href=\"#tab3\"><?php echo kohana::lang("ui_main.customform"); ?></a></li>";
 			
 			
 			
@@ -65,25 +66,24 @@ var incident_content = (function(){
 								"</div>"+
 					   		"</div>";
 					   		
-				if(showImages){
+				if(showImages)
 					content += "<div id=\"tab2\" class=\"iw_tab\">"+
 			   						"<ul class=\"iw_nob iw_media\">"+
 			   							imageContent+
 			   						"</ul>"+
 								"</div>";
-				}
 				
-				if(showCustomForm){
+				if(showCustomForm)
 					content += "<div id=\"tab3\" class=\"iw_tab\">"+customForm+"</div>";
-				}
+				
 			
-			content += "<div class=\"iw_ft clearingfix\">"+
-							"<ul class=\"iw_nob iw_meta report_detail\">"+
-								"<li class=\"iw_loc r_location\">"+incidentLocationName+"</li>"+
-								"<li class=\"iw_date r_date\">"+incidentDate+"</li>"+
-							"</ul>"+
-						"</div><!-- /div.iw_ft -->"+
-					"</div><!-- /div#iw-tabs -->";
+					content += "<div class=\"iw_ft clearingfix\">"+
+									"<ul class=\"iw_nob iw_meta report_detail\">"+
+										"<li class=\"iw_loc r_location\">"+incidentLocationName+"</li>"+
+										"<li class=\"iw_date r_date\">"+incidentDate+"</li>"+
+									"</ul>"+
+								"</div><!-- /div.iw_ft -->"+
+							"</div><!-- /div#iw-tabs -->";
 			
 			
 			/* 
@@ -92,12 +92,16 @@ var incident_content = (function(){
 			$("#iw-lat").text(incident.locationlatitude);
 			$("#iw-lon").text(incident.locationlongitude);
 	
-				$("#iw-content").empty().html(content);
+				$("#iw-placeholder").empty().html(content);
 				
 				$tabs = $("#iw-tabs");
 				
-				$tabs.tabs({selected:0, fx: { opacity: 'toggle' } });
-				
+				if($tabs.find(".iw_tab").length > 1){
+				    $tabs.tabs({selected:0, fx: { opacity: 'toggle' } });
+				}else{
+				    $("#iw-tabs-nav").hide();
+				}
+								
 				$tabs.find(".iw_media_image").find("a").click(function(e){
 				
 					var $trigger = $(this),
@@ -245,7 +249,7 @@ var incident_content = (function(){
 					
 					//List the description
 					
-						content += "<h2 class=\"iw_media_title iw_desc_title\">Description</h2><div class=\"iw_desc\">"+incidentData.incident.incidentdescription+"</div>";
+						content += "<div class=\"iw_desc\">"+incidentData.incident.incidentdescription+"</div>";
 					
 					
 					//Get the links
@@ -270,7 +274,8 @@ var incident_content = (function(){
 							if(links.length > 0){
 								var link;
 								len = links.length;
-								content += "<h2 class=\"iw_media_title iw_link_title\">Links</h2><ul>";
+								content += "<h6 class=\"iw_media_title iw_link_title\"><?php echo Kohana::lang("ui_main.links"); ?></h6>"+
+											"<ul class=\"iw_links_list\">";
 								
 								for(i=0;i<len;i++){
 									
@@ -283,11 +288,6 @@ var incident_content = (function(){
 							}//endif
 							
 						}
-					
-						//Get the categories
-					
-						content += "<h2 class=\"iw_media_title iw_category_title\">Categories</h2>"+
-							"<ul class=\"iw_category_list\">"+this._incident_categories(incidentData)+"</ul>";
 					
 					return content;
 				
@@ -469,13 +469,15 @@ function pageCallback(index,jq){
 function initPagination(){
 	var num_items = incidents.length;
 	
-	$("#iw-content").after("<div id=\"pagination-wrap\" />");
+	$("#iw").append("<div id=\"pagination-wrap\" />");
 	
 	$("#pagination-wrap").pagination(num_items,{
 		items_per_page : 1, //Show only one item at a time.
 		callback : pageCallback, // Callback for every page click,
 		num_edge_entries : 1,
-		num_display_entries:7
+		num_display_entries:7,
+		next_text : "<?php echo kohana::lang("ui_main.next"); ?>",
+		prev_text : "<?php echo kohana::lang("ui_main.prev"); ?>"
 	});
 	
 
@@ -509,9 +511,9 @@ function onFeatureSelect(event){
 			lon = zoom_point.lon;
 			lat = zoom_point.lat;
 
-			var content = "<div class=\"iw\">"+
-						"<div id=\"iw-content\" class=\"clearingfix\"></div>"+
-						  	"<div class=\"iw_ft_meta clearingfix\">"+
+			var content = "<div id=\"iw\" class=\"iw\">"+
+						"<div id=\"iw-placeholder\" class=\"clearingfix\"></div>"+
+						  	"<div id=\"iw-ft-meta\" class=\"clearingfix\">"+
 						  		"<ul id=\"iw_coord\" class=\"iw_nob iw_al\">"+
 						  			"<li id=\"iw-lon\">00</li>"+
 						  			"<li id=\"iw-lat\">00</li>"+
@@ -519,23 +521,9 @@ function onFeatureSelect(event){
 						  		"<ul class=\"iw_nob iw_ar\">"+
 							  		"<li class=\"iw_more\">"+
 								  		"<a href='"+event.feature.attributes.link+"'>"+
-								  			"<?php echo Kohana::lang('ui_main.more_information');?>"+
+								  			"<?php echo Kohana::lang('ui_main.view_report');?>"+
 								  		"</a>"+
 							  		"</li>"+
-							  		"<li>"+
-								  		"<ul class=\"iw_nob\">"+
-									  		"<li class=\"iw_zi\">"+
-										  		"<a title=\"Zoom In\" class=\"iconic plus-alt\" href='javascript:zoomToSelectedFeature("+ lon + ","+ lat +", 1)'>"+
-										  			"<?php echo Kohana::lang('ui_main.zoom_in');?>"+
-										  		"</a>"+
-									  		"</li>"+
-									  		"<li class=\"iw_zo\">"+
-									  			"<a title=\"Zoom Out\" class=\"iconic minus-alt\" href='javascript:zoomToSelectedFeature("+ lon + ","+ lat +", -1)'>"+
-									  				"<?php echo Kohana::lang('ui_main.zoom_out');?>"+
-									  			"</a>"+
-									  		"</li>"+
-								  		"</ul>"+
-							  		"</li>"
 						  		"</ul>"+
 						  	"</div>"+
 					  "</div>";	
@@ -549,7 +537,7 @@ function onFeatureSelect(event){
             
             popup = new OpenLayers.Popup.FramedCloud("iw-bubble", 
 				event.feature.geometry.getBounds().getCenterLonLat(),
-				new OpenLayers.Size(100,100),
+				new OpenLayers.Size(400,400),
 				content,
 				null, true, onPopupClose);
            
@@ -566,7 +554,7 @@ function onFeatureSelect(event){
        			renderSingle();
        	    
        	    if(map.getCurrentSize().h < 400){
-       	    	jQuery("#iw-content").addClass("small-map");
+       	    	jQuery("#iw-placeholder").addClass("small-map");
        	    }
        	    popup.updateSize();
 }
