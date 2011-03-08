@@ -12,7 +12,8 @@ var num_pages = 1,
 	
 ---------------------------------------------------------------------------*/
 var incident_content = (function(){
-
+	
+	var category_map = [];
 
 	return {
 	
@@ -26,14 +27,14 @@ var incident_content = (function(){
 				
 				incidentDate = this.helper._get_date_time(incident.incidentdate),
 	
-				media = (incidentData.media),
+				imageContent = this.helper._image_content(incidentData),
 	
 				//TODO: introduce custom form fields
 				customForm = this.helper._custom_form_content(incident.incidentid),
 				
 				showCustomForm = (customForm.length > 0) ? true : false,
 				
-				showMedia = (media.length > 0) ? true : false,
+				showImages = (imageContent.length > 0) ? true : false,
 				
 				$tabs,
 				
@@ -46,10 +47,10 @@ var incident_content = (function(){
 									incidentVerified+
 							"</div>"+
 							"<div id=\"iw-tabs\">"+
-							"<ul id=\"iw-tabs-nav\" class=\"iw_nob\"><li><a href=\"#tab1\">Description</a></li>";
+							"<ul id=\"iw-tabs-nav\" class=\"iw_nob\"><li><a href=\"#tab1\">Details</a></li>";
 			
-			if(showMedia)
-				content += "<li><a href=\"#tab2\">Media</a></li>";
+			if(showImages)
+				content += "<li><a href=\"#tab2\">Images</a></li>";
 			
 			
 			if(showCustomForm)
@@ -60,14 +61,14 @@ var incident_content = (function(){
 				content += "</ul>"+
 							"<div id=\"tab1\" class=\"iw_tab\">"+
 								"<div class=\"iw_details report_detail\">"+
-									incident.incidentdescription+
+									this.helper._description_content(incidentData)+
 								"</div>"+
 					   		"</div>";
 					   		
-				if(showMedia){
+				if(showImages){
 					content += "<div id=\"tab2\" class=\"iw_tab\">"+
 			   						"<ul class=\"iw_nob iw_media\">"+
-			   							this.helper._media_content(incidentData)+
+			   							imageContent+
 			   						"</ul>"+
 								"</div>";
 				}
@@ -116,10 +117,6 @@ var incident_content = (function(){
 					 	theDate = new Date(dateArr[0]),
 					 	theTime = dateArr[1].slice(0,-3);
 					 						
-					
-					
-					
-					
 					return theTime + " " + theDate.toDateString();
 					
 				
@@ -186,7 +183,7 @@ var incident_content = (function(){
 				
 				}), // end _custom_form_content
 			
-				_media_content : (function(incidentData){
+				_image_content : (function(incidentData){
 					var media = incidentData.media,
 						
 						mediaLen = media.length,
@@ -197,8 +194,6 @@ var incident_content = (function(){
 						
 						content = "", //Final return value
 						
-						links = [], //Will be pushing in links here
-						
 						images = []; //Will be pushing in images here
 					
 					
@@ -206,19 +201,15 @@ var incident_content = (function(){
 					for(i; i<mediaLen;i++){
 						
 						item = media[i];
-						
-												
-						switch(item.type){
-						
-							case "1" :
-								//Media Image
-								images.push({incidenttitle : incidentData.incident.incidenttitle, thumb: "<?php echo url::base()."media/uploads/"; ?>"+item.thumb, url : "<?php echo url::base()."media/uploads/"; ?>"+item.link});
+				
+						if(item.type == "1"){
+						//Media Image
+							images.push({
+								incidenttitle : incidentData.incident.incidenttitle, 
+								thumb: "<?php echo url::base()."media/uploads/"; ?>"+item.thumb, 
+								url : "<?php echo url::base()."media/uploads/"; ?>"+item.link
+							});
 								
-							break;
-							
-							default : 
-								//Media Link
-								links.push({url : item.link});
 						}
 						
 					}//end for
@@ -231,8 +222,6 @@ var incident_content = (function(){
 						var len = images.length,
 							image;
 						
-						content += "<li><h2 class=\"iw_media_title\">Images</h2></li>";
-						
 						for(i=0;i<len;i++){
 							image = images[i];
 							content += "<li class=\"iw_media_image\"><a target=\"_image\" rel=\"iwgroup\" href=\""+image.url+"\" title=\""+image.incidenttitle+"\"><img src=\""+image.thumb+"\" alt=\""+image.incidenttitle+"\" /></a></li>";
@@ -240,27 +229,149 @@ var incident_content = (function(){
 						
 					}
 						
-					if(links.length > 0){
-					
-						//Build the link html
-						
-						var len = links.length,
-							link;
-						
-						content += "<li><h2 class=\"iw_media_title\">Links</h2></li>";
-						
-						for(i=0;i<len;i++){
-							link = links[i];
-							content += "<li class=\"iw_media_link\"><a target=\"_web\" href=\""+link.url+"\">"+link.url+"</a></li>";
-						}
-						
-					}
-					
-					
-					return content; //Return the final html (either blank, images, links, or both images and links)
+					return content; //Return the final image html
 					
 				
-				})// end _media_content
+				}),// end _media_content
+				_description_content : (function(incidentData){
+					
+					
+					var media = incidentData.media,
+						len = media.length,
+						links = [],
+						content = "",
+						i=0;
+					
+					
+					//List the description
+					
+						content += "<h2 class=\"iw_media_title iw_desc_title\">Description</h2><div class=\"iw_desc\">"+incidentData.incident.incidentdescription+"</div>";
+					
+					
+					//Get the links
+					
+						if(len > 0){
+							var item;
+							
+							for(i; i < len; i++){
+								item = media[i];
+								
+								if( ( item.type != "1" ) && ( item.link != undefined ) ){
+									
+									links.push({
+									
+										url : item.link
+									
+									});
+								}
+								
+							}//end for
+							
+							if(links.length > 0){
+								var link;
+								len = links.length;
+								content += "<h2 class=\"iw_media_title iw_link_title\">Links</h2><ul>";
+								
+								for(i=0;i<len;i++){
+									
+									link = links[i];
+									content += "<li class=\"iw_media_link\"><a target=\"_web\" href=\""+link.url+"\">"+link.url+"</a></li>";
+								
+								}//endfor
+								content += "</ul>";
+							
+							}//endif
+							
+						}
+					
+						//Get the categories
+					
+						content += "<h2 class=\"iw_media_title iw_category_title\">Categories</h2>"+
+							"<ul class=\"iw_category_list\">"+this._incident_categories(incidentData)+"</ul>";
+					
+					return content;
+				
+				}),
+				/* 
+					Builds the category html
+					@param incidentData incidentData object
+					@return string
+				*/
+				_incident_categories : (function(incidentData){
+					
+					var categories = incidentData.categories,
+						len = categories.length,
+						i = 0,
+						category,
+						content = "";
+						
+					for(i; i < len; i++){
+						
+						category = this._category(categories[i].category.id);
+						
+						if(category)
+						content += "<li class=\"iw_category\">"+
+										"<a title=\""+category.title+"\" class=\"r_category\" href=\"<?php echo url::base()."reports/?c=" ?>"+category.id+"\">"+
+											"<span class=\"r_cat-box\" style=\"background-color:#"+category.color+"\"></span>"+
+											"<span class=\"r_cat-desc\">"+category.title+"</span>"+
+										"</a></li>";
+										
+					}
+					
+					return content;
+				}),
+				
+				/* 
+					Returns category object by id 
+					@param cat_id Category id
+					@return category object
+				*/
+				_category : (function(cat_id){
+					var len = 0, category;
+					
+					if(category_map.length == 0){
+						//We don't have the category_map stored, let's build it first
+						jQuery.ajax({
+					      type: "GET",
+					      url: "<?php echo url::base()."api?task=categories"; ?>",
+					      async: false,
+					      dataType: "json",
+					      success : function(data){
+								if(data.error.code == "0"){
+								
+									var categories = data.payload.categories,
+										catLen = categories.length,
+										i = 0,
+										category,
+										key;
+									
+									for(i; i<catLen;i++){
+										
+										category = categories[i].category;
+										
+										category_map.push({id:category.id,category:category});
+										
+									}
+								}
+							}	
+					  	
+					  	});
+					}
+					
+					len = category_map.length;
+					
+					for(var i = 0; i < len; i++){
+						//Determine which category we're searching for
+						if(cat_id == category_map[i].id){
+							//Category found, set the category variable and break out of the loop
+							category = category_map[i].category;
+							break;
+						}
+					}
+					
+					return category; //Category Object
+					
+				})
 			
 			}// end helper
 		
@@ -383,7 +494,7 @@ function get_content(feature){
 
 function onFeatureSelect(event){
 	
-	 selectedFeature = event;
+	 selectedFeature = event.feature;
             // Since KML is user-generated, do naive protection against
             // Javascript.
 
@@ -452,6 +563,9 @@ function onFeatureSelect(event){
        	    }
        	    popup.updateSize();
 }
+
+    
+
 jQuery(function($){
 	
 	if($.fn.tabs === undefined){

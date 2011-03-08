@@ -149,8 +149,8 @@ a.iconic:hover {
 	#iw-tabs .iw_tab{
 		height:82px;
 		overflow:auto;
+		overflow-x:hidden;
 		padding-top:4px;
-		
 		}
 
 
@@ -161,7 +161,7 @@ a.iconic:hover {
 .iw_media_title{
 	margin:5px 0;
 	padding:2px 5px;
-	font-size: 20px;
+	font-size: 16px;
 	border: solid #a8a8a8;
 	border-width: 1px 0;
 	clear:both;
@@ -187,6 +187,7 @@ a.iconic:hover {
 .iw_media_link > a{
 	color:#3764AA;
 	text-decoration:underline;
+	word-wrap:break-word;
 }
 .iw_media_link > a:hover{color:#008cff}
 .iw_media_link > a:visited{color:#7D3C3C}
@@ -196,7 +197,15 @@ a.iconic:hover {
 	margin-right:5px;
 }
 
+.iw_category_list{clear:both;margin-bottom: 10px;}
 
+.iw_category_list > li{
+	float:left;
+	display:inline;
+	margin: 0 5px 5px 0;
+}
+.iw_category_list > li:last-child{margin-right:0;}
+.iw_desc{margin: 5px;}
 /* 
 	[Infowindow - Footer]
 ---------------------------------------------------------------------------*/
