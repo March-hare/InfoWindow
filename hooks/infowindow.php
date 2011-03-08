@@ -10,11 +10,17 @@ class InfoWindow {
 	}
 
 	public function add(){
-		if( Router::$controller == "main" || /*Incase we are using the map embed plugin*/ Router::$controller == "mapembed") 
+		if( Router::$controller == "main" ) 
 		{
-			plugin::add_stylesheet("InfoWindow/views/css/infowindow");
-			Event::add("ushahidi_action.main_footer",array($this,"register_script"));
+		    plugin::add_stylesheet("InfoWindow/views/css/infowindow");
+		    Event::add("ushahidi_action.main_footer",array($this,"register_script"));
 		}
+		if(Router::$controller == "mapembed"){
+		 	/*Incase we are using the map embed plugin*/
+		    plugin::add_stylesheet("InfoWindow/views/css/infowindow");
+		    Event::add("mapembed.main_footer",array($this,"register_script"));
+		}
+	
 	}
 	
 	public function register_script(){
