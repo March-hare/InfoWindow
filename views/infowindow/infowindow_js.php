@@ -454,14 +454,14 @@ function renderSingle(){
 ---------------------------------------------------------------------------*/
 var prevIndex = 0;
 function pageCallback(index,elem){
-	var $iw = $("#iw"),
+	var $iw = jQuery("#iw"),
 		csspos = (prevIndex < index) ? {"left":500,"opacity":0} : {"left":-500,"opacity":0};
 		
 	incident_content.tabbed(incidents[index]);
 	
 	$iw.addClass("scrolling");
 	
-	$("#iw-placeholder").css(csspos).animate({
+	jQuery("#iw-placeholder").css(csspos).animate({
 		left : 0,
 		opacity:1
 	},250,function(){

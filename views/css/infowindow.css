@@ -135,7 +135,7 @@ a.iconic:hover {
 	[Infowindow - Tabs]
 ---------------------------------------------------------------------------*/
 
-#iw-tabs{border:0;background:none;}
+#iw-tabs{padding:0;border:0;background:none;}
 
 
 
