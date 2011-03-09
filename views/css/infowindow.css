@@ -187,8 +187,11 @@ a.iconic:hover {
 
 
 	/* Description */
-	.iw_desc{margin: 0 0 5px}
-
+	#iw .ui_widget,
+	.iw_desc{font-size:12px;}
+	
+	.iw_desc{margin-bottom:5px}
+	
 
 
 
