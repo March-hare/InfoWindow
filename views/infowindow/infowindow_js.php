@@ -260,7 +260,7 @@ var incident_content = (function(){
 							for(i; i < len; i++){
 								item = media[i];
 								
-								if( ( item.type != "1" ) && ( item.link != undefined ) ){
+								if( ( item.type != "1" ) && ( item.link != undefined || item.link != "") ){
 									
 									links.push({
 									
