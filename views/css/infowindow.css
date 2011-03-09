@@ -66,6 +66,9 @@ a.iconic:hover {
 	min-height: 200px;
 	width: 400px;
 	}
+#iw.scrolling{overflow:hidden;}
+
+#iw-placeholder{position:relative;}
 
 /* 
 	[Header]
@@ -79,7 +82,7 @@ a.iconic:hover {
 	.iw_title{
 		font-size: 14px;
 		margin:0;
-		padding-right: 68px;
+		padding-right: 70px;
 	}
 		.iw_title a{}
 		.iw_title a:hover{text-transform: none;}
@@ -132,7 +135,9 @@ a.iconic:hover {
 	[Infowindow - Tabs]
 ---------------------------------------------------------------------------*/
 
-#iw-tabs{}
+#iw-tabs{border:0;background:none;}
+
+
 
 #iw-tabs #iw-tabs-nav{
 	-moz-box-shadow: 0 4px 5px rgba(255,255,255,.85);
@@ -141,6 +146,7 @@ a.iconic:hover {
 	-o-box-shadow: 0 4px 5px rgba(255,255,255,.85);
 	box-shadow: 0 4px 5px rgba(255,255,255,.85);
 }
+
 #iw-tabs,
 #iw-tabs #iw-tabs-nav,
 #iw-tabs .iw_tab{
@@ -286,11 +292,12 @@ a.iconic:hover {
 	clear:both;
 	height: 20px;
 	margin: 5px 0;
+	padding: 0 5px;
 }
 
 .pagination {
-     font-size: 10px;
-        }
+	font-size: 10px;
+}
         
 .pagination a {
     text-decoration: none;

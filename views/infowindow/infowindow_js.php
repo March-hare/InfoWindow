@@ -452,9 +452,23 @@ function renderSingle(){
 /* 
 	[Event Handler for Paging]
 ---------------------------------------------------------------------------*/
-function pageCallback(index,jq){
-	
+var prevIndex = 0;
+function pageCallback(index,elem){
+	var $iw = $("#iw"),
+		csspos = (prevIndex < index) ? {"left":500,"opacity":0} : {"left":-500,"opacity":0};
+		
 	incident_content.tabbed(incidents[index]);
+	
+	$iw.addClass("scrolling");
+	
+	$("#iw-placeholder").css(csspos).animate({
+		left : 0,
+		opacity:1
+	},250,function(){
+		$iw.removeClass("scrolling");
+	});
+	
+	prevIndex = index;
 	
 	popup.updateSize();
 	
@@ -467,7 +481,7 @@ function pageCallback(index,jq){
 function initPagination(){
 	var num_items = incidents.length;
 	
-	jQuery("#iw").append("<div id=\"pagination-wrap\" />");
+	jQuery("#iw").after("<div id=\"pagination-wrap\" />");
 	jQuery("#iw-view-report").text("<?php echo Kohana::lang('ui_main.view_reports');?>");//Plural if many reports
 	jQuery("#pagination-wrap").pagination(num_items,{
 		items_per_page : 1, //Show only one item at a time.
