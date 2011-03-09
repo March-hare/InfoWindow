@@ -65,29 +65,8 @@ a.iconic:hover {
 	padding:2px 0 0 5px;
 	min-height: 200px;
 	width: 400px;
-	position:relative;
 	}
-/* Loading indicator - initial hidden*/
-#iw:after{
-	top:0;left:0;
-	text-align:center;
-	font-size: 20px;
-	content:"Loading Report";
-	position:absolute;
-	height: 100%;
-	width:100%;
-	line-height: 250px;
-	text-shadow: 1px 1px 0 #fff;
-	color:#222;
-	background:#fff;
-	opacity:.65;
-	filter:alpha(opacity=65);
-	display:none;
-}
-#iw.scrolling{overflow:hidden;}
-
-/* Loading indicator shows*/
-#iw.scrolling:after{display:block;}
+#iw.scrolling{overflow:hidden;}/* while things are animating */
 
 #iw-placeholder{position:relative;}
 
