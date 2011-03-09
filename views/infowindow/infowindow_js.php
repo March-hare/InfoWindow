@@ -500,6 +500,11 @@ function get_content(feature){
 }
 
 
+ /* Event handler for map zoomed */  
+function closePopup(event){
+	map.removePopup(popup); //Remove popup (FramedCloud);
+}
+
 function onFeatureSelect(event){
 	
 	 selectedFeature = event.feature;
@@ -534,18 +539,23 @@ function onFeatureSelect(event){
                 content = "Content contained Javascript! Escaped content below.<br />" + content.replace(/</g, "&lt;");
             }
             
-            popup = new OpenLayers.Popup.FramedCloud("iw-bubble", 
-				event.feature.geometry.getBounds().getCenterLonLat(),
-				new OpenLayers.Size(400,400),
-				content,
-				null, true, onPopupClose);
+            popup = new OpenLayers.Popup.FramedCloud(
+            	/*Id*/"iw-bubble", 
+				/*lonlat*/event.feature.geometry.getBounds().getCenterLonLat(),
+				/*imageSize*/new OpenLayers.Size(440,350),
+				/*contentHtml*/content,
+				/*anchor*/null, 
+				/*closeBox*/true, 
+				/*closeBoxCallback*/onPopupClose
+				);
+           	
+           	event.feature.popup = popup;
            
-            event.feature.popup = popup;
-            
-            
-            
             map.addPopup(popup);
-                      	
+            
+            /* Close popup when we zoom the map, it causes problemos */          	
+           	map.events.register("zoomend",null,closePopup);
+           	
            	
        		if(paginate)
        			initPagination();
@@ -555,10 +565,12 @@ function onFeatureSelect(event){
        	    if(map.getCurrentSize().h < 400){
        	    	jQuery("#iw-placeholder").addClass("small-map");
        	    }
+       	    
        	    popup.updateSize();
+       	    popup.updatePosition();
 }
 
-    
+
 
 jQuery(function($){
 	

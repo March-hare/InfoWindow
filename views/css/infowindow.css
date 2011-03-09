@@ -299,22 +299,21 @@ a.iconic:hover {
 .pagination span {
     display: block;
     float: left;
-    padding: 0.3em 0.5em;
+    padding: 2px 3px;
     margin-right: 5px;
 	margin-bottom: 5px;
-	min-width:1em;
+	min-width:10px;
 	text-align:center;
 }
+.pagination .next{margin-right:0;}
 .pagination a:hover{
 	background:#f90;
 }
-
 .pagination .current {
     background: #26B;
     color: #fff;
 	border: solid 1px #AAE;
 }
-
 .pagination .current.prev, .pagination .current.next{
 	color:#999;
 	border-color:#999;
