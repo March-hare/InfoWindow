@@ -260,7 +260,7 @@ var incident_content = (function(){
 							for(i; i < len; i++){
 								item = media[i];
 								
-								if( ( item.type != "1" ) && ( item.link != undefined || item.link != "") ){
+								if( ( item.type != "1" ) && ( item.link != undefined && item.link != "") ){
 									
 									links.push({
 									
@@ -446,9 +446,7 @@ function set_single_content(feature){
 	
 }
 
-function renderSingle(index){
-	
-	
+function renderSingle(){
 	incident_content.tabbed(incidents[0]); //Only rendering one incident;
 }
 /* 
@@ -469,9 +467,9 @@ function pageCallback(index,jq){
 function initPagination(){
 	var num_items = incidents.length;
 	
-	$("#iw").append("<div id=\"pagination-wrap\" />");
-	
-	$("#pagination-wrap").pagination(num_items,{
+	jQuery("#iw").append("<div id=\"pagination-wrap\" />");
+	jQuery("#iw-view-report").text("<?php echo Kohana::lang('ui_main.view_reports');?>");//Plural if many reports
+	jQuery("#pagination-wrap").pagination(num_items,{
 		items_per_page : 1, //Show only one item at a time.
 		callback : pageCallback, // Callback for every page click,
 		num_edge_entries : 1,
@@ -479,6 +477,7 @@ function initPagination(){
 		next_text : "<?php echo kohana::lang("ui_main.next"); ?>",
 		prev_text : "<?php echo kohana::lang("ui_main.prev"); ?>"
 	});
+	
 	
 
 }
@@ -521,7 +520,7 @@ function onFeatureSelect(event){
 						  		"<ul class=\"iw_nob iw_ar\">"+
 							  		"<li class=\"iw_more\">"+
 								  		"<a href='"+event.feature.attributes.link+"'>"+
-								  			"<?php echo Kohana::lang('ui_main.view_reports');?>"+
+								  			"<span id=\"iw-view-report\"><?php echo Kohana::lang('ui_main.view_report');?></span>"+
 								  		"</a>"+
 							  		"</li>"+
 						  		"</ul>"+
