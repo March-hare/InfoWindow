@@ -65,8 +65,28 @@ a.iconic:hover {
 	padding:2px 0 0 5px;
 	min-height: 200px;
 	width: 400px;
+	position:relative;
 	}
 #iw.scrolling{overflow:hidden;}/* while things are animating */
+
+#iw:after{
+	content: " ";
+	position:absolute;
+	top:0;
+	height: 100%;width:2px;
+	background:#000;
+	opacity:.45;
+	border: 0 solid #aaa;
+	filter:alpha(opacity=45);
+	-webkit-box-shadow: 0 0 2px rgba(0,0,0,.85);
+	-moz-box-shadow: 0 0 2px rgba(0,0,0,.85);
+	-khtml-box-shadow: 0 0 2px rgba(0,0,0,.85);
+	-o-box-shadow: 0 0 2px rgba(0,0,0,.85);
+	box-shadow: 0 0 2px rgba(0,0,0,.85);
+	display:none;
+}
+#iw.scrolling:after{display:block;right:-2px;border-width: 0 1px 0 0}
+#iw.scrollingleft:after{left:-2px;border-width:0 0 0 1px;}
 
 #iw-placeholder{position:relative;}
 

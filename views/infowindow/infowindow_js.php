@@ -456,17 +456,18 @@ function pageCallback(index,elem){
 				 /*Don't animate, it's the first item */ {"left":0,"opacity":1} : 
 				 (prevIndex < index) ? 
 				 /*Animate right*/ {"left":500,"opacity":0} : 
-				 /*Animate left*/{"left":-500,"opacity":0};
+				 /*Animate left*/{"left":-500,"opacity":0},
+		scrollClass = (prevIndex === 0 && index === 0) ? "" : (prevIndex < index) ? "scrolling" : "scrolling scrollingleft";
 		
 	incident_content.tabbed(incidents[index]);
 	
-	$iw.addClass("scrolling");
+	$iw.addClass(scrollClass);
 	
 	jQuery("#iw-placeholder").css(csspos).animate({
 		left : 0,
 		opacity:1
 	},250,function(){
-		$iw.removeClass("scrolling");
+		$iw.removeClass(scrollClass);
 	});
 	
 	prevIndex = index;
