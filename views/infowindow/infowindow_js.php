@@ -2,7 +2,14 @@ var num_pages = 1,
 	paginate = false,
 	incidents = [],
 	popup,
-	prevIndex = 0;
+	prevIndex = 0,
+	ajaxProperties = {
+		type : "GET",
+		url : "",
+		async : false,
+		dataType : "json",
+		success : (function(){})
+	};
 
 
 /* 
@@ -14,8 +21,6 @@ var num_pages = 1,
 ---------------------------------------------------------------------------*/
 var incident_content = (function(){
 	
-	var category_map = [];
-
 	return {
 	
 		tabbed : (function(incidentData){
@@ -117,6 +122,13 @@ var incident_content = (function(){
 		}),
 		
 		helper : {
+				
+				category_map : [], //This wi
+				/**
+				 * Parses the date field and returns readable date
+				 * @param string
+				 * @return string
+				 */
 				_get_date_time : (function(iDate){
 					var dateArr = iDate.split(" "),
 					 	theDate = new Date(dateArr[0]),
@@ -126,22 +138,22 @@ var incident_content = (function(){
 					
 				
 				}),
+				/**
+				 *	Retrieves customform data by incident
+				 *  @param incidentid
+				 *  @return - string
+				 */
 				_custom_form_content : (function(incidentid){
-					var form = "";
-					
-					jQuery.ajax({
-					
-						type : "GET",
-						url : "<?php echo url::base(); ?>api?task=customforms&by=fields&id="+incidentid,
-						async : false,
-						dataType : "json",
-						success : function(data){
-							
-							if(data.error.code == 0){
+					var form = "",
+						url = "<?php echo url::base(); ?>api?task=customforms&by=fields&id="+incidentid;
+						
+						ajaxProperties.url = url;
+						ajaxProperties.success = (function(data){
+							if(data.error.code === "0"){
 								var fields = data.payload.customforms.fields,
 									len = fields.length;
-									
-									form = "<ul class=\"iw_cf iw_nob\">";
+							
+								form = "<ul class=\"iw_cf iw_nob\">";
 								
 								if(len > 0){ // Do we have custom form fields? 
 									for(var i = 0; i < len; i++){
@@ -152,6 +164,7 @@ var incident_content = (function(){
 											valuesCol = field.values,
 											meta = field.meta,
 											valuesLen = valuesCol.length;
+											
 										if( (type != 8) && (type != 9) ){ //don't need to show div fields
 											if(valuesLen > 1){
 											
@@ -166,24 +179,15 @@ var incident_content = (function(){
 											}
 											
 											form += "<li class=\"custom-form-item\"><strong>"+field.meta.name+":</strong> "+value+"</li>";					
-										}//end if	
-										
-									
+										}//end if(type...)	
 									}//end for
-									
-									
-									
-								}
+								}//end if (len>0)
 								form += "</ul>";
-								
-								
-								
-								
-								
-							}//end if(!data.error)
-						}
-					});
-				
+							}//end if data.error.code
+						}); //end success
+						
+						jQuery.ajax(ajaxProperties); //make ajax call
+						
 					return form;
 				
 				}), // end _custom_form_content
@@ -335,51 +339,54 @@ var incident_content = (function(){
 					@return category object
 				*/
 				_category : (function(cat_id){
-					var len = 0, category;
-					
-					if(category_map.length == 0){
-						//We don't have the category_map stored, let's build it first
-						jQuery.ajax({
-					      type: "GET",
-					      url: "<?php echo url::base()."api?task=categories"; ?>",
-					      async: false,
-					      dataType: "json",
-					      success : function(data){
-								if(data.error.code == "0"){
-								
-									var categories = data.payload.categories,
-										catLen = categories.length,
-										i = 0,
-										category,
-										key;
-									
-									for(i; i<catLen;i++){
-										
-										category = categories[i].category;
-										
-										category_map.push({id:category.id,category:category});
-										
-									}
-								}
-							}	
-					  	
-					  	});
-					}
-					
-					len = category_map.length;
+					var category,
+						len = (this.category_map.length > 0) ? this.category_map.length : this._init_categories();
 					
 					for(var i = 0; i < len; i++){
 						//Determine which category we're searching for
-						if(cat_id == category_map[i].id){
+						if(cat_id == this.category_map[i].id){
 							//Category found, set the category variable and break out of the loop
-							category = category_map[i].category;
+							category = this.category_map[i].category;
 							break;
 						}
 					}
 					
 					return category; //Category Object
 					
-				})
+				}),
+				
+				/**
+				 *	Initializes the category_map array
+				 * 	@return integer (array length)
+				 */
+				_init_categories : (function(){
+					
+					if(this.category_map.length === 0){
+						//We don't have the category_map stored, let's build it first
+						ajaxProperties.url = "<?php echo url::base()."api?task=categories"; ?>";
+						ajaxProperties.success = (function(data){
+							if(data.error.code == "0"){
+								var categories = data.payload.categories,
+									catLen = categories.length,
+									i = 0,
+									category,
+									key;
+								for(i; i<catLen;i++){
+									
+									category = categories[i].category;
+									
+									incident_content.helper.category_map.push({id:category.id,category:category});
+									
+								}//end for
+							}//end if
+							return incident_content.helper.category_map.length;
+						});//end success
+						
+						jQuery.ajax(ajaxProperties); //Make the call
+							
+					}//end if
+					
+				}) //end _init_categories
 			
 			}// end helper
 		
@@ -390,73 +397,23 @@ var incident_content = (function(){
 
 })();
 
-var ajaxProperties = {
-	type : "GET",
-	url : "",
-	async : false,
-	dataType : "json",
-	success : (function(){})
-};
-
-
 function set_incidents(url){
 	
 	ajaxProperties.url = url;
+	
+	//ajax callback function
 	ajaxProperties.success = (function(data){
 		incidents = data.payload.incidents;
-		set_custom_form(incidents);
+		incident_content.helper._init_categories(); //let's get the incident categories map initialized
+		prevIndex = 0; //Reset the index count for paging
 	});
 	
-	jQuery.ajax(ajaxProperties);
+	jQuery.ajax(ajaxProperties); //make the ajax request
 
 
 }
 
-function set_custom_form(incidents){
-	var url =  "<?php echo url::base(); ?>api?task=customforms&by=fields&id=",
-		idx = 0; //maintain the state of the current index in the loop
-	
-	ajaxProperties.success = (function(data,i){
-		
-		incidents[idx].customforms = []; //Initializse the customforms property.
-		
-		if(data.error.code === 0){
-			
-			//TODO: push the customforms data into the customforms property of the incidents object.
-		
-		}
-		
-		
-		
-	});
-	
-	
-	if(incidents.length > 0){
-		var len = incidents.length,
-			i = 0,
-			incident;
-		for(i;i<len;i++){
-			incident = incidents[i];
-			ajaxProperties.url = url + incident.incident.incidentid;
-			idx = i;
-			jQuery.ajax(ajaxProperties);
-		}
-		
-	
-	}
-	
-	ajaxProperties.url =""
-	
-	//jQuery.ajax(ajaxProperties);
-
-}
-
-
-//TODO: Figure out how to get complete bounds count.
-//TODO: Display Title, description, lat lon, link to report
 function set_cluster_content(feature){
-	
-	
 	
 	var content = " ",
 		link = feature.attributes.link,
@@ -471,9 +428,6 @@ function set_cluster_content(feature){
 	
 }
 
-
-// TODO 1: ajax call for individual incident information
-// Display Title, description, link to report, lat/lon information would be good too. 
 
 function set_single_content(feature){
 	
