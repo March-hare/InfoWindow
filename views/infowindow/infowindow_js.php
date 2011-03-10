@@ -390,24 +390,66 @@ var incident_content = (function(){
 
 })();
 
+var ajaxProperties = {
+	type : "GET",
+	url : "",
+	async : false,
+	dataType : "json",
+	success : (function(){})
+};
 
 
 function set_incidents(url){
 	
-	jQuery.ajax({
-      type: "GET",
-      url: url,
-      async: false,
-      dataType: "json",
-      success : function(data){
-			incidents = data.payload.incidents;
-		}	
-  	
-  	});
+	ajaxProperties.url = url;
+	ajaxProperties.success = (function(data){
+		incidents = data.payload.incidents;
+		set_custom_form(incidents);
+	});
+	
+	jQuery.ajax(ajaxProperties);
 
 
 }
 
+function set_custom_form(incidents){
+	var url =  "<?php echo url::base(); ?>api?task=customforms&by=fields&id=",
+		idx = 0; //maintain the state of the current index in the loop
+	
+	ajaxProperties.success = (function(data,i){
+		
+		incidents[idx].customforms = []; //Initializse the customforms property.
+		
+		if(data.error.code === 0){
+			
+			//TODO: push the customforms data into the customforms property of the incidents object.
+		
+		}
+		
+		
+		
+	});
+	
+	
+	if(incidents.length > 0){
+		var len = incidents.length,
+			i = 0,
+			incident;
+		for(i;i<len;i++){
+			incident = incidents[i];
+			ajaxProperties.url = url + incident.incident.incidentid;
+			idx = i;
+			jQuery.ajax(ajaxProperties);
+		}
+		
+	
+	}
+	
+	ajaxProperties.url =""
+	
+	//jQuery.ajax(ajaxProperties);
+
+}
 
 
 //TODO: Figure out how to get complete bounds count.
