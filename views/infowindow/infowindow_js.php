@@ -1,7 +1,8 @@
 var num_pages = 1,
 	paginate = false,
 	incidents = [],
-	popup;
+	popup,
+	prevIndex = 0;
 
 
 /* 
@@ -452,10 +453,14 @@ function renderSingle(){
 /* 
 	[Event Handler for Paging]
 ---------------------------------------------------------------------------*/
-var prevIndex = 0;
+
 function pageCallback(index,elem){
 	var $iw = jQuery("#iw"),
-		csspos = (prevIndex < index) ? {"left":500,"opacity":0} : {"left":-500,"opacity":0};
+		csspos = (prevIndex === 0 && index === 0) ? 
+				 /*Don't animate, it's the first item */ {"left":0,"opacity":1} : 
+				 (prevIndex < index) ? 
+				 /*Animate right*/ {"left":500,"opacity":0} : 
+				 /*Animate left*/{"left":-500,"opacity":0};
 		
 	incident_content.tabbed(incidents[index]);
 	
