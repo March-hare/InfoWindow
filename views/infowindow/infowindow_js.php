@@ -401,7 +401,6 @@ var incident_content = (function(){
 function set_incidents(url){
 	
 	ajaxProperties.url = url;
-	
 	//ajax callback function
 	ajaxProperties.success = (function(data){
 		incidents = data.payload.incidents;
@@ -432,14 +431,12 @@ function set_cluster_content(feature){
 
 function set_single_content(feature){
 	
-	var link = feature.attributes.link,
+	var link = feature.attributes.link;
 		urlParse = new RegExp("[/^][0-9]+\/?"),
         numParse  = new RegExp("[0-9]+"),
         id = numParse.exec(urlParse.exec(link)), 
 		
 		url = "<?php echo URL::base();?>api?task=incidents&by=incidentid&id="+id;
-		
-		console.log(link);
 		
 	set_incidents(url);
 		
