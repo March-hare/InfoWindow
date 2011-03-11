@@ -9,7 +9,8 @@ var num_pages = 1,
 		async : false,
 		dataType : "json",
 		success : (function(){})
-	};
+	},
+	customforms = <?php echo kohana::config("infowindow.show_custom_forms"); ?>;
 
 
 /* 
@@ -432,10 +433,13 @@ function set_cluster_content(feature){
 function set_single_content(feature){
 	
 	var link = feature.attributes.link,
-		lArr = link.split("view/"),
-		id = lArr[1],
+		urlParse = new RegExp("[/^][0-9]+\/?"),
+        numParse  = new RegExp("[0-9]+"),
+        id = numParse.exec(urlParse.exec(link)), 
+		
 		url = "<?php echo URL::base();?>api?task=incidents&by=incidentid&id="+id;
 		
+		console.log(link);
 		
 	set_incidents(url);
 		
