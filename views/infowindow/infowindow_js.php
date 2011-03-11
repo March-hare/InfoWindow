@@ -9,8 +9,7 @@ var num_pages = 1,
 		async : false,
 		dataType : "json",
 		success : (function(){})
-	},
-	customforms = <?php echo kohana::config("infowindow.show_custom_forms"); ?>;
+	};
 
 
 /* 
@@ -401,6 +400,7 @@ var incident_content = (function(){
 function set_incidents(url){
 	
 	ajaxProperties.url = url;
+	
 	//ajax callback function
 	ajaxProperties.success = (function(data){
 		incidents = data.payload.incidents;
