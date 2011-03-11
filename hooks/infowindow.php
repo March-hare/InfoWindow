@@ -10,12 +10,12 @@ class InfoWindow {
 	}
 
 	public function add(){
-		if( Router::$controller == "main" ) 
+		if( Router::$controller == "main" || /*adminmap plugin support*/ Router::$controller = "bigmap") 
 		{
 		    plugin::add_stylesheet("InfoWindow/views/css/infowindow");
 		    Event::add("ushahidi_action.main_footer",array($this,"register_script"));
 		}
-		if(Router::$controller == "mapembed"){
+		if(/*mapembed plugin support*/ Router::$controller == "mapembed"){
 		 	/*Incase we are using the map embed plugin*/
 		    plugin::add_stylesheet("InfoWindow/views/css/infowindow");
 		    Event::add("mapembed.main_footer",array($this,"register_script"));
