@@ -10,7 +10,7 @@ class InfoWindow {
 	}
 
 	public function add(){
-		if( Router::$controller == "main" || /*adminmap plugin support*/ Router::$controller = "bigmap") 
+		if( Router::$controller == "main" || /*adminmap plugin support*/ Router::$controller == "bigmap") 
 		{
 		    plugin::add_stylesheet("InfoWindow/views/css/infowindow");
 		    Event::add("ushahidi_action.main_footer",array($this,"register_script"));
