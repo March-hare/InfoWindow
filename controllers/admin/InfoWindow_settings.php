@@ -14,7 +14,7 @@
 * 
 */
 
-class Infowindow_Settings_Controller extends Admin_Controller
+class InfoWindow_Settings_Controller extends Admin_Controller
 {
 	public function index()
 	{
