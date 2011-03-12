@@ -9,7 +9,8 @@ var num_pages = 1,
 		async : false,
 		dataType : "json",
 		success : (function(){})
-	};
+	},
+	infowindow_settings = {showcustomforms : <?php echo ($showcustomforms) ? "true" : "false"; ?>, showimages : <?php echo ($showimages) ? "true" : "false"; ?>};
 
 
 /* 
@@ -33,14 +34,12 @@ var incident_content = (function(){
 				
 				incidentDate = this.helper._get_date_time(incident.incidentdate),
 	
-				imageContent = this.helper._image_content(incidentData),
+				imageContent = (infowindow_settings.showimages) ? this.helper._image_content(incidentData) : "",
 	
-				//TODO: introduce custom form fields
-				customForm = this.helper._custom_form_content(incident.incidentid),
+				customForm = (infowindow_settings.showcustomforms) ? this.helper._custom_form_content(incident.incidentid) : "",
+				showCustomForm = (infowindow_settings.showcustomforms) ? ((customForm.length > 0) ? true : false) : false,
 				
-				showCustomForm = (customForm.length > 0) ? true : false,
-				
-				showImages = (imageContent.length > 0) ? true : false,
+				showImages = (infowindow_settings.showimages) ? ((imageContent.length > 0) ? true : false) : false,
 				
 				$tabs,
 				

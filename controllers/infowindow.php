@@ -7,10 +7,15 @@ class InfoWindow_Controller extends Controller{
 		
 		$this->view = View::factory("infowindow/infowindow_js");
 		
+		
+		
 		header("Content-Type: text/javascript"); //set proper mime-type;
 		
+		$this->view->showcustomforms = kohana::config("infowindow.showcustomforms");
+		$this->view->showimages = kohana::config("infowindow.showimages");
+		
 		$this->view->render(TRUE);
-	
+		
 	
 	}
 
