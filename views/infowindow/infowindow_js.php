@@ -414,12 +414,11 @@ function set_incidents(url){
 
 function set_cluster_content(feature){
 	
-	var content = " ",
-		link = feature.attributes.link,
-		lArr = link.split("&"),
-		sw = lArr[1],
-		ne = lArr[2],
-		url= "<?php echo URL::base(); ?>api?task=incidents&by=bounds&c=0&"+sw+"&"+ne+"&limit="+feature.attributes.count;
+	var link = feature.attributes.link,
+		c = get_query("c",link),
+		sw = get_query("sw",link),
+		ne = get_query("ne",link),
+		url= "<?php echo URL::base(); ?>api?task=incidents&by=bounds&c="+c+"&sw="+sw+"&ne="+ne+"&limit="+feature.attributes.count;
 	
 	set_incidents(url);
 	
@@ -427,7 +426,20 @@ function set_cluster_content(feature){
 	
 }
 
+/**
+ * Function get_query
+ * @param key - Value to search
+ * @param link - Value to parse through
+ * @return string or empty
+ */
+function get_query(key,link){
+	key = key.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+    var val = new RegExp("[\\?&]"+key+"=([^&#]*)"),
+    	query = val.exec(link);
+	
+	return (query!=null) ? query[1] : "";
 
+}
 function set_single_content(feature){
 	
 	var link = feature.attributes.link;
