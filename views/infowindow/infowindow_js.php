@@ -59,14 +59,15 @@ var incident_content = (function(){
 				content += "<li><a href=\"#tab2\"><?php echo kohana::lang("ui_main.images"); ?></a></li>";
 			
 			
-			if(showCustomForm)
+		/*	if(showCustomForm)
 				content += "<li><a href=\"#tab3\"><?php echo kohana::lang("ui_main.customform"); ?></a></li>";
-			
+		*/	
 			
 			
 				content += "</ul>"+
 							"<div id=\"tab1\" class=\"iw_tab\">"+
 								"<div class=\"iw_details report_detail\">"+
+									customForm+
 									this.helper._description_content(incidentData)+
 								"</div>"+
 					   		"</div>";
@@ -78,9 +79,9 @@ var incident_content = (function(){
 			   						"</ul>"+
 								"</div>";
 				
-				if(showCustomForm)
+		/*		if(showCustomForm)
 					content += "<div id=\"tab3\" class=\"iw_tab\">"+customForm+"</div>";
-				
+		*/		
 			
 					content += "<div class=\"iw_ft clearingfix\">"+
 									"<ul class=\"iw_nob iw_meta report_detail\">"+
@@ -313,7 +314,7 @@ var incident_content = (function(){
 						
 						category = this._category(categories[i].category.id);
 						
-						if(category){
+						if(category && (category.title == "Functioning Well" || category.title == "Non-Functioning Well" || category.title == "Project" || category.title == "Out of Contact")){
 						content += "<li class=\"iw_category\">"+
 										"<a title=\""+category.title+"\" class=\"r_category\" href=\"<?php echo url::base()."reports/?c=" ?>"+category.id+"\">";
 						if(category.image_thumb!=undefined && category.image_thumb!= null){
@@ -323,9 +324,15 @@ var incident_content = (function(){
 						}else{				
 							content += "<span class=\"r_cat-box\" style=\"background-color:#"+category.color+"\"></span>";
 						}//endif
-							content += "<span class=\"r_cat-desc\">"+category.title+"</span>"+
+							content += "</li><li>"+
+										"<a title=\""+category.title+"\"  href=\"<?php echo url::base()."reports/?c=" ?>"+category.id+"\">"+
+										category.title+
 										"</a>"+
 									"</li>";
+							/*content += "<span class=\"r_cat-desc\">"+category.title+"</span>"+
+										"</a>"+
+									"</li>";
+							*/
 						}//endif					
 					}
 					
