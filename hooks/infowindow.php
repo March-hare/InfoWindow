@@ -9,10 +9,11 @@ class InfoWindow {
 		
 	}
 
-	public function add(){
+  public function add(){
     if( 
     /*main maps support*/ Router::$controller == "main" || 
     /*reports maps support*/ Router::$controller == "reports" ||
+    /*decayimage maps support*/ Router::$controller == "decayimage" ||
     /*adminmap plugin support*/ Router::$controller == "bigmap"
     ) 
 		{
